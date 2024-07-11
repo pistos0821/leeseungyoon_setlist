@@ -84,6 +84,31 @@
             font-size: 0.8em; /* 크기 줄이기 */
             padding: 5px 10px; /* 크기 줄이기 */
         }
+        .note {
+            font-size: 0.5em; /* 작은 글씨 크기 */
+            color: gray; /* 회색 글씨 */
+            font-weight: lighter; /* 얇은 글씨 */
+        }
+
+        /* 모바일 장치에 맞는 스타일 추가 */
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .title {
+                font-size: 18px;
+            }
+            table, th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+            .wide-column {
+                width: auto;
+            }
+            .narrow-column {
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -109,7 +134,7 @@
     </div>
     
     <div id="performanceList" class="section">
-        <h2>1. 공연 목록</h2>
+        <h2>1. 공연 목록 <span class="note">(방송, 대축 등 일부 공연 제외)</span></h2>
         <table>
             <thead>
                 <tr>
