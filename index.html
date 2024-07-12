@@ -6,6 +6,7 @@
     <title>🐰 이승윤 공연 셋리 🎵</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* 기존 CSS 코드 그대로 유지 */
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
@@ -15,13 +16,13 @@
         .title {
             color: rgb(75, 192, 192);
             text-align: center;
-            margin-bottom: 20px; /* 제목과 다음 항목 사이의 간격 */
+            margin-bottom: 20px;
         }
         .center-align {
             text-align: center;
         }
         .section {
-            margin-bottom: 20px; /* 각 섹션 사이의 간격 */
+            margin-bottom: 20px;
         }
         #performanceList, #songList, #chartContainer {
             margin-top: 20px;
@@ -31,26 +32,26 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-            table-layout: fixed; /* 테이블 레이아웃 고정 */
+            table-layout: fixed;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
-            word-break: break-word; /* 긴 단어 줄바꿈 */
+            word-break: break-word;
         }
         th {
             background-color: rgb(75, 192, 192);
             color: white;
-            text-align: center; /* 헤더 가운데 정렬 */
+            text-align: center;
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        .wide-column { /* 공연 이름과 날짜 열 너비 설정 */
+        .wide-column {
             width: 15%; 
         }
-        .narrow-column { /* 곡수 열 너비 설정 */
+        .narrow-column {
             width: 10%;
         }
         tr:hover {
@@ -75,22 +76,20 @@
             display: none;
         }
         #authControls {
-            display: block; /* 항상 표시 */
-            text-align: right; /* 오른쪽 정렬 */
+            display: block;
+            text-align: right;
             margin-bottom: 20px;
         }
         #loginBtn {
-            background-color: #d3d3d3; /* 옅은 회색 배경색 */
-            font-size: 0.8em; /* 크기 줄이기 */
-            padding: 5px 10px; /* 크기 줄이기 */
+            background-color: #d3d3d3;
+            font-size: 0.8em;
+            padding: 5px 10px;
         }
         .note {
-            font-size: 0.5em; /* 작은 글씨 크기 */
-            color: gray; /* 회색 글씨 */
-            font-weight: lighter; /* 얇은 글씨 */
+            font-size: 0.5em;
+            color: gray;
+            font-weight: lighter;
         }
-
-        /* 모바일 장치에 맞는 스타일 추가 */
         @media only screen and (max-width: 600px) {
             body {
                 padding: 10px;
@@ -138,7 +137,7 @@
         <table>
             <thead>
                 <tr>
-                    <th class="wide-column">공연<br>이름</th> <!-- 줄바꿈 추가 -->
+                    <th class="wide-column">공연<br>이름</th>
                     <th class="wide-column">날짜</th>
                     <th>세트리스트</th>
                     <th class="narrow-column">곡 수</th> 
@@ -179,7 +178,7 @@
         let performances = JSON.parse(localStorage.getItem('performances')) || [];
         let isAdmin = false;
 
-        const PASSWORD = "쓔클0821"; // 실제 사용 시 더 강력한 비밀번호를 사용하세요
+        const PASSWORD = "쓔클0821";
 
         loginBtn.addEventListener('click', function() {
             const password = prompt("관리자 비밀번호를 입력하세요:");
@@ -206,165 +205,4 @@
 
         setlistForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            if (!isAdmin) return;
-
-            const performanceName = document.getElementById('performanceName').value;
-            const performanceDate = document.getElementById('performanceDate').value;
-            const setlist = document.getElementById('setlist').value.split('\n');
-            
-            const performance = {
-                id: Date.now(),
-                name: performanceName,
-                date: performanceDate,
-                setlist: setlist
-            };
-            
-            performances.push(performance);
-            updateSongCounts();
-            saveData();
-            updatePerformanceList();
-            updateSongList();
-            updateChart();
-            setlistForm.reset();
-        });
-
-        function updatePerformanceList() {
-            performanceListBody.innerHTML = '';
-            performances.sort((a, b) => new Date(a.date) - new Date(b.date)); // 날짜순으로 정렬
-            performances.forEach((performance) => {
-                const row = performanceListBody.insertRow();
-                row.insertCell(0).textContent = performance.name;
-                row.insertCell(1).textContent = performance.date;
-                row.insertCell(2).textContent = performance.setlist.join(', ');
-                row.insertCell(3).textContent = performance.setlist.length; // 이 부분이 추가되었습니다
-                if (isAdmin) {
-                    const actionsCell = row.insertCell(4); // 기존의 actionsCell index도 4로 변경되었습니다
-                    
-                    const editBtn = document.createElement('button');
-                    editBtn.textContent = '수정';
-                    editBtn.className = 'edit-btn';
-                    editBtn.onclick = () => editPerformance(performance.id);
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = '삭제';
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.onclick = () => deletePerformance(performance.id);
-                    
-                    actionsCell.appendChild(editBtn);
-                    actionsCell.appendChild(deleteBtn);
-                }
-            });
-        }
-
-        function editPerformance(id) {
-            if (!isAdmin) return;
-            const performance = performances.find(p => p.id === id);
-            if (performance) {
-                document.getElementById('performanceName').value = performance.name;
-                document.getElementById('performanceDate').value = performance.date;
-                document.getElementById('setlist').value = performance.setlist.join('\n');
-                
-                setlistForm.onsubmit = function(e) {
-                    e.preventDefault();
-                    performance.name = document.getElementById('performanceName').value;
-                    performance.date = document.getElementById('performanceDate').value;
-                    performance.setlist = document.getElementById('setlist').value.split('\n');
-                    
-                    updateSongCounts();
-                    saveData();
-                    updatePerformanceList();
-                    updateSongList();
-                    updateChart();
-                    setlistForm.reset();
-                    
-                    setlistForm.onsubmit = null;
-                };
-            }
-        }
-
-        function deletePerformance(id) {
-            if (!isAdmin) return;
-            if (confirm('정말로 이 공연을 삭제하시겠습니까?')) {
-                performances = performances.filter(p => p.id !== id);
-                updateSongCounts();
-                saveData();
-                updatePerformanceList();
-                updateSongList();
-                updateChart();
-            }
-        }
-
-        function updateSongCounts() {
-            songCounts = {};
-            performances.forEach(performance => {
-                performance.setlist.forEach(song => {
-                    song = song.trim();
-                    if (song) {
-                        songCounts[song] = (songCounts[song] || 0) + 1;
-                    }
-                });
-            });
-        }
-
-        function saveData() {
-            localStorage.setItem('songCounts', JSON.stringify(songCounts));
-            localStorage.setItem('performances', JSON.stringify(performances));
-        }
-
-
-        function updateSongList() {
-            songListBody.innerHTML = '';
-            const sortedSongs = Object.entries(songCounts)
-                .sort((a, b) => {
-                    if (b[1] !== a[1]) {
-                        return b[1] - a[1]; // 누적 공연 횟수에 따라 내림차순 정렬
-                    } else {
-                        return a[0].localeCompare(b[0], 'ko'); // 누적 공연 횟수가 같으면 가나다 순 정렬
-                    }
-                });
-
-            sortedSongs.forEach(([song, count]) => {
-                const row = songListBody.insertRow();
-                row.insertCell(0).textContent = song;
-                row.insertCell(1).textContent = count;
-            });
-
-            updateChart(sortedSongs); // 수정된 데이터를 사용하여 차트 업데이트
-        }
-
-        function updateChart(sortedSongs) {
-            const ctx = document.getElementById('songChart').getContext('2d');
-            const labels = sortedSongs.map(song => song[0]);
-            const data = sortedSongs.map(song => song[1]);
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '공연 횟수',
-                        data: data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        updatePerformanceList();
-        updateSongList();
-        updateChart();
-    </script>
-</body>
-</html>
+            if (!is
